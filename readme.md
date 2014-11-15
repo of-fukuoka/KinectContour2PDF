@@ -24,36 +24,36 @@
 
 ## 使用addon
 
-- ofxNI2: oFでOpenNIを使うならコレだと思ってます。
-- ofxCv: oFでOpenCVを使うならコレだと思ってます。
+- [ofxNI2](https://github.com/satoruhiga/ofxNI2): oFでOpenNIを使うならコレだと思ってます。
+- [ofxCv](https://github.com/kylemcdonald/ofxCv): oFでOpenCVを使うならコレだと思ってます。
 - ofxOpenCv: ofxCvを使うのに使用。あとofxCvがContourFinderでのHoleの検出が未サポートのようなのでそこでは使ってます。
-- ofxParamEdit: GUIでのリアルタイムパラメータ調整ならコレ。（自分のだけど……あと最近はofxUIも気になってます）
+- [ofxParamEdit](https://github.com/nariakiiwatani/ofxParamEdit): GUIでのリアルタイムパラメータ調整ならコレ。（自分のだけど……あと最近はofxUIも気になってます）
 - ofxGui: ofxParamEditを使うのに必要
-- ofxCairo: 今回初めて使用。PDF書き出しに使ってます。
+- [ofxCairo](https://github.com/bgstaal/ofxCairo): 今回初めて使用。PDF書き出しに使ってます。
 
 ## ポイント
 
-- ofxNI2はdepth画像のdraw時に使うシェーダーを差し替えられるつくりになってて便利
-上下左右奥行きのクリッピングはこのシェーダーでやってます。（NI.cppの Threshold::getShaderCode() const を参照）
+- ofxNI2はdepth画像のdraw時に使うシェーダーを差し替えられるつくりになってて便利  
+上下左右奥行きのクリッピングはこのシェーダーでやってます。（[src/NI.cppの Threshold::getShaderCode() const](https://github.com/of-fukuoka/KinectContour2PDF/blob/master/src/NI.cpp#L130-150) を参照）  
 シェーダーなので今回のようにその結果をOpenCVとかで処理したければ一度FBOに書く必要があるけど、ofPixelsをいじるよりは速い気がしてます。
 
-- 輪郭の平滑化はofPolylineで、塗りつぶし描画はofPathでやってる
+- 輪郭の平滑化はofPolylineで、塗りつぶし描画はofPathでやってる  
 これは単純に関数が用意されているかどうかの問題なので別にポイントじゃないけど・・・。
 
-- 台座を足す処理はFBOに書いちゃって改めて輪郭検出してる
-ContourFinderを２度通すことになるので処理コスト的に無駄だけど、書き出し時にしか通んないしまあ良いかなって。。
+- 台座を足す処理はFBOに書いちゃって改めて輪郭検出してる  
+ContourFinderを２度通すことになるので処理コスト的に無駄だけど、書き出し時にしか通んないしまあ良いかなって。。  
 パスデータの合成をまともに書くのが嫌だったのが主な理由です。
 
 ## ハマりポイント
 
-- ofxCvのバージョン
+- ofxCvのバージョン  
 ofxCvがmasterブランチで早々と0.9.0対応を進めているのでコンパイル通らず困りました。  
 とはいえそこはさすがちゃんとしていて、0.8.4というtagがあったのでそれをcheckoutして解決。
 
-- ofxCvのContourFinderで検出された輪郭がHoleかどうかがわからない
+- ofxCvのContourFinderで検出された輪郭がHoleかどうかがわからない  
 ofxCvのContourFinderは、現状ではHoleかどうかの区別なく輪郭が検出されます。  
 たぶんHoleは頂点の順番が逆まわりなので、それを元に自前で判定する方向もありなんですが書く意欲がわかなかったので輪郭検出にはofxOpenCvのContourFinderを使うことにしました。
 
-- ofxCairoがstrokeを書き出してくれない？
+- ofxCairoがstrokeを書き出してくれない？  
 輪郭が欲しかったのでnoFillしてstrokeだけのデータにしたかったけどそうすると空データが書き出されて困った。  
 それ以上のことは調べてません。
