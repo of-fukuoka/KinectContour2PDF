@@ -48,7 +48,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	ofBackground(0);
+	ofBackground(128);
 	ofPushMatrix();
 	ofTranslate(SCREEN_X, SCREEN_Y);
 	ofScale(SCREEN_SCALE_X, SCREEN_SCALE_Y);
@@ -78,6 +78,7 @@ void ofApp::keyPressed(int key){
 }
 void ofApp::exportImage()
 {
+	camera_.drawOutline();		// don't know why but it's the way
 	pdf_.begin(true, "hoge.pdf");
 	ofClear(0);
 	camera_.drawOutline();

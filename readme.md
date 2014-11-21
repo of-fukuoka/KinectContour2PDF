@@ -55,5 +55,8 @@ ofxCvのContourFinderは、現状ではHoleかどうかの区別なく輪郭が�
 たぶんHoleは頂点の順番が逆まわりなので、それを元に自前で判定する方向もありなんですが書く意欲がわかなかったので輪郭検出にはofxOpenCvのContourFinderを使うことにしました。
 
 - ofxCairoがstrokeを書き出してくれない？  
-輪郭が欲しかったのでnoFillしてstrokeだけのデータにしたかったけどそうすると空データが書き出されて困った。  
-それ以上のことは調べてません。
+輪郭だけが欲しかったのでofPath::setFilled(false)とofPath::setStrokeColor(ofColor::black)をしてdrawしたのだけど何も表示してくれない。  
+実はofPath::draw()内でstrokeWidth>0をチェックしていて、これでスキップされてたっぽい。(draw()-->tessellate()-->hasOutline()と掘れば見つかります)  
+ofPath::setStrokeWidth(1)を追加で設定して解決した。  
+描画するのに使うときはstrokeWidth>0でチェックして良いけど、今回みたいにPDF書き出しをするなら太さゼロの線も書き出したいから何か方法があると良いんだけど。  
+ofGetCurrentRenderer()->draw(poly)してもだめだった。  

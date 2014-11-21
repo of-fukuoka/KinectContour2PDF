@@ -23,11 +23,14 @@ void CameraDevice::setup()
 			depth_.setupShader<Threshold>();
 		}
 	}
-	contour_.setSortBySize(true);
 	contour_.setSimplify(false);
 	contour_.setInvert(false);
 	contour_.setFindHoles(true);
+	contour_.resetMinArea();
+	contour_.resetMaxArea();
 	frame_buffer_.allocate(WIDTH, HEIGHT, GL_RGB);
+	depth_pixels_.allocate(WIDTH, HEIGHT, 3);
+	color_image_.allocate(WIDTH, HEIGHT);
 	grayscale_image_.allocate(WIDTH, HEIGHT);
 }
 void CameraDevice::update()
@@ -52,6 +55,7 @@ void CameraDevice::update()
 	frame_buffer_.begin();
 	ofClear(0);
 	ofPath path;
+	path.setUseShapeColor(false);
 	color_image_.setFromPixels(depth_pixels_);
 	grayscale_image_ = color_image_;
 	contour_finder_.findContours(grayscale_image_, setting_.min_area, setting_.max_area, 128, true);
@@ -66,8 +70,9 @@ void CameraDevice::update()
 		poly.simplify(setting_.simplify);
 		poly = poly.getSmoothed(setting_.smoothing_size, setting_.smoothing_shape);
 		if(poly.size() < 3) continue;
+		path.newSubPath();
 		path.moveTo(poly[0]);
-		for(int j = 1; j < blob.nPts; ++j) {
+		for(int j = 1; j < poly.size(); ++j) {
 			path.lineTo(poly[j]);
 		}
 		path.close();
@@ -93,18 +98,17 @@ void CameraDevice::drawOutline()
 {
 	ofTexture &depth_texture = frame_buffer_.getTextureReference();
 	depth_texture.readToPixels(depth_pixels_);
-	contour_.resetMinArea();
-	contour_.resetMaxArea();
 	contour_.findContours(depth_pixels_);
 	ofPath path;
-	path.setFilled(true);
-	path.setFillColor(ofColor::black);
+	path.setFilled(false);
 	path.setStrokeColor(ofColor::black);
+	path.setStrokeWidth(1);
 	const vector<ofPolyline> &polylines = contour_.getPolylines();
 	for(vector<ofPolyline>::const_iterator it = polylines.begin(); it != polylines.end(); ++it) {
 		const ofPolyline &poly = *it;
 		int poly_size = poly.size();
 		if(poly_size < 3) continue;
+		path.newSubPath();
 		path.moveTo(poly[0]);
 		for(int j = 1; j < poly_size; ++j) {
 			path.lineTo(poly[j]);
