@@ -1,0 +1,14 @@
+<camera>
+	<left>0</left>
+	<right>640</right>
+	<top>0</top>
+	<bottom>480</bottom>
+	<near>0.033</near>
+	<far>0.063</far>
+<camera/>
+<min_area>650</min_area>
+	<max_area>840000</max_area>
+	<smoothing_size>8</smoothing_size>
+	<smoothing_shape>0.05</smoothing_shape>
+<simplify>0.1</simplify>
+</camera>
